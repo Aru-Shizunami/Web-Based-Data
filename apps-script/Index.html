@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        color-scheme: dark;
+        --night: #0b111d;
+        --panel: #121c2b;
+        --panel-raised: #172437;
+        --line: #28384b;
+        --text: #edf3f7;
+        --muted: #9aaabd;
+        --mint: #9ce4c5;
+        --amber: #f2c77c;
+        --rose: #f2a0a0;
+        --mono: 'DM Mono', monospace;
+        --sans: 'Manrope', sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html { min-height: 100%; background: var(--night); }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        color: var(--text);
+        overflow-x: hidden;
+        background-color: var(--night);
+        background-image:
+          radial-gradient(1px 1px at 14% 21%, rgba(223, 241, 255, .44) 50%, transparent 100%),
+          radial-gradient(1px 1px at 76% 11%, rgba(223, 241, 255, .26) 50%, transparent 100%),
+          radial-gradient(1px 1px at 89% 66%, rgba(223, 241, 255, .3) 50%, transparent 100%),
+          linear-gradient(160deg, #0c1421 0%, #0b111d 58%, #101b27 100%);
+        background-size: 190px 190px, 230px 230px, 270px 270px, auto;
+        overscroll-behavior-y: none;
+        font-family: var(--sans);
+        font-size: 14px;
+        min-height: 100vh;
+      }
+      button, input, textarea, select { font: inherit; }
+      button { cursor: pointer; }
+      .shell { max-width: 1440px; min-height: 100vh; min-height: 100dvh; margin: 0 auto; padding: 28px 34px calc(48px + env(safe-area-inset-bottom)); }
+      .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 26px; border-bottom: 1px solid rgba(156, 180, 205, .16); }
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .brand-mark { width: 34px; aspect-ratio: 1; display: grid; place-items: center; border: 1px solid var(--mint); border-radius: 50%; color: var(--mint); font-family: var(--mono); font-size: 15px; }
+      .brand-name { font-size: 14px; font-weight: 800; letter-spacing: 0; }
+      .brand-note { color: var(--muted); font: 10px var(--mono); margin-top: 3px; }
+      .account { color: var(--muted); font: 11px var(--mono); display: flex; align-items: center; gap: 8px; }
+      .account-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 10px rgba(156, 228, 197, .7); }
+      .topbar-tools { display: flex; align-items: center; gap: 18px; }
+      .sheet-link { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 7px 10px; border: 1px solid #3a4d62; border-radius: 4px; color: var(--mint); font-size: 10px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+      .sheet-link:hover { border-color: var(--mint); background: var(--panel-raised); }
+      .intro { display: flex; align-items: end; justify-content: space-between; gap: 18px; padding: 34px 0 24px; }
+      .eyebrow { color: var(--mint); font: 11px var(--mono); text-transform: uppercase; }
+      h1 { margin: 8px 0 0; font-size: 30px; line-height: 1.2; letter-spacing: 0; }
+      .intro-copy { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+      .summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-block: 1px solid var(--line); margin-bottom: 26px; }
+      .metric { min-height: 94px; padding: 17px 22px 17px 0; }
+      .metric + .metric { padding-left: 22px; border-left: 1px solid var(--line); }
+      .metric-label { color: var(--muted); font-size: 11px; }
+      .metric-value { margin-top: 8px; font: 500 20px var(--mono); }
+      .metric-value.mint { color: var(--mint); }
+      .tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); margin-bottom: 22px; }
+      .tab { color: var(--muted); border: 0; border-bottom: 2px solid transparent; padding: 11px 14px; margin-bottom: -1px; background: transparent; font-size: 12px; }
+      .tab.active { color: var(--mint); border-bottom-color: var(--mint); }
+      .workspace-grid { display: grid; grid-template-columns: minmax(285px, 370px) minmax(0, 1fr); gap: 28px; align-items: start; }
+      .tool-panel { background: rgba(18, 28, 43, .92); border: 1px solid var(--line); border-radius: 6px; padding: 21px; }
+      .section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 18px; }
+      h2 { font-size: 15px; margin: 0; letter-spacing: 0; }
+      .section-note { color: var(--muted); font: 10px var(--mono); }
+      .field { display: grid; gap: 7px; margin-bottom: 14px; }
+      .field label, .field-label { color: #bdcad6; font-size: 11px; font-weight: 700; }
+      input, textarea, select { width: 100%; color: var(--text); border: 1px solid #35475c; border-radius: 4px; background: #0e1724; padding: 10px 11px; outline: none; min-height: 40px; }
+      textarea { min-height: 72px; resize: vertical; }
+      input:focus, textarea:focus, select:focus { border-color: var(--mint); box-shadow: 0 0 0 2px rgba(156, 228, 197, .12); }
+      input::placeholder, textarea::placeholder { color: #66788c; }
+      .two-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .line-head { display: flex; justify-content: space-between; align-items: center; margin: 3px 0 10px; }
+      .item-list { display: grid; gap: 10px; }
+      .item-row { padding: 12px; background: #0e1724; border: 1px solid #26384c; border-radius: 4px; }
+      .item-row-top { display: grid; grid-template-columns: minmax(0, 1fr) 30px; gap: 8px; align-items: center; }
+      .item-row-top input { min-width: 0; }
+      .item-row-bottom { display: grid; grid-template-columns: 72px repeat(2, minmax(0, 1fr)); gap: 8px; align-items: end; margin-top: 9px; }
+      .item-row-bottom .field { margin: 0; }
+      .item-row-bottom label { font: 10px var(--mono); color: var(--muted); }
+      .item-row-bottom input { padding: 8px; min-height: 36px; }
+      .item-subtotal { display: flex; justify-content: space-between; gap: 8px; font: 10px var(--mono); color: var(--muted); padding-top: 9px; white-space: normal; }
+      .item-profit { color: var(--mint); white-space: nowrap; }
+      .icon-button { display: inline-grid; place-items: center; min-width: 30px; min-height: 30px; border: 1px solid #33455a; background: transparent; color: var(--muted); border-radius: 4px; }
+      .icon-button:hover { color: var(--rose); border-color: var(--rose); }
+      .text-button { border: 0; padding: 4px 0; background: transparent; color: var(--mint); font-size: 11px; font-weight: 700; }
+      .totals { border-top: 1px solid var(--line); margin-top: 15px; padding-top: 13px; display: grid; gap: 9px; }
+      .total-line { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; }
+      .total-line strong { color: var(--text); font: 12px var(--mono); }
+      .total-line.due strong { color: var(--mint); font-size: 15px; }
+      .primary-button { border: 1px solid var(--mint); border-radius: 4px; background: var(--mint); color: #0b211b; font-weight: 800; padding: 11px 14px; min-height: 42px; }
+      .primary-button:hover { background: #b5f0d7; }
+      .secondary-button { border: 1px solid #3a4d62; border-radius: 4px; background: #172437; color: var(--text); font-weight: 700; padding: 9px 12px; min-height: 38px; }
+      .secondary-button:hover { border-color: var(--mint); }
+      .form-actions { display: flex; gap: 9px; margin-top: 16px; }
+      .form-actions .primary-button { flex: 1; }
+      .list-area { min-width: 0; }
+      .list-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+      .list-toolbar h2 { white-space: nowrap; }
+      .search { max-width: 340px; }
+      .debt-list { display: grid; gap: 10px; }
+      .debt-card { border: 1px solid var(--line); border-radius: 5px; background: rgba(18, 28, 43, .76); padding: 16px 17px; }
+      .customer-group { border: 1px solid var(--line); border-radius: 5px; background: rgba(18, 28, 43, .76); overflow: hidden; }
+      .customer-group > summary { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 16px 17px; cursor: pointer; list-style: none; }
+      .customer-group > summary::-webkit-details-marker { display: none; }
+      .customer-group > summary::after { content: '+'; color: var(--mint); font: 16px var(--mono); }
+      .customer-group[open] > summary::after { content: '−'; }
+      .group-subtitle { color: var(--muted); font: 10px var(--mono); margin-top: 5px; }
+      .group-amount { text-align: right; white-space: nowrap; font: 12px var(--mono); }
+      .group-amount strong { color: var(--mint); display: block; margin-top: 5px; }
+      .group-body { border-top: 1px solid var(--line); padding: 13px; }
+      .group-totals { display: flex; flex-wrap: wrap; gap: 8px 16px; color: var(--muted); font: 10px var(--mono); margin-bottom: 12px; }
+      .group-totals strong { color: var(--text); font-weight: 500; }
+      .settle-row { display: flex; justify-content: flex-end; margin-bottom: 11px; }
+      .transaction-list { display: grid; gap: 8px; }
+      .transaction-card { border: 1px solid #29394c; border-radius: 4px; background: #0e1724; padding: 12px; }
+      .debt-main { display: flex; justify-content: space-between; gap: 14px; }
+      .debt-person { font-size: 14px; font-weight: 800; }
+      .debt-date { color: var(--muted); font: 10px var(--mono); margin-top: 4px; }
+      .debt-amount { text-align: right; font: 12px var(--mono); white-space: nowrap; }
+      .debt-remaining { color: var(--mint); margin-top: 5px; }
+      .debt-profit { color: var(--amber); margin-top: 5px; font-size: 10px; }
+      .debt-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 13px; padding-top: 11px; border-top: 1px solid rgba(156, 180, 205, .13); }
+      .item-summary { color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+      .debt-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+      .status { font: 9px var(--mono); padding: 5px 7px; border: 1px solid #48566a; border-radius: 20px; color: var(--amber); white-space: nowrap; }
+      .status.paid { color: var(--mint); border-color: rgba(156, 228, 197, .5); }
+      .status.partial { color: var(--amber); border-color: rgba(242, 199, 124, .5); }
+      .empty { border: 1px dashed #34475d; color: var(--muted); padding: 35px 20px; text-align: center; border-radius: 5px; font-size: 12px; }
+      .master-grid { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 26px; align-items: start; }
+      .master-switch { display: inline-flex; border: 1px solid var(--line); padding: 3px; border-radius: 5px; gap: 3px; margin-bottom: 18px; }
+      .master-switch button { border: 0; border-radius: 3px; padding: 8px 10px; background: transparent; color: var(--muted); font-size: 11px; }
+      .master-switch button.active { background: var(--panel-raised); color: var(--mint); }
+      .master-list { display: grid; gap: 8px; }
+      .master-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); background: rgba(18, 28, 43, .72); border-radius: 4px; }
+      .master-name { font-weight: 700; overflow-wrap: anywhere; }
+      .master-detail { color: var(--muted); font: 10px var(--mono); margin-top: 5px; }
+      .master-row .secondary-button { flex-shrink: 0; min-height: 32px; padding: 6px 9px; font-size: 10px; }
+      .purchase-amount { font: 12px var(--mono); color: var(--amber); white-space: nowrap; }
+      .hidden { display: none !important; }
+      .toast { position: fixed; right: 22px; bottom: 22px; max-width: min(420px, calc(100vw - 32px)); padding: 13px 16px; color: var(--text); background: #1b2b3b; border: 1px solid var(--mint); border-radius: 5px; box-shadow: 0 10px 35px #0008; z-index: 10; }
+      .toast.error { border-color: var(--rose); }
+      .loading { color: var(--muted); padding: 32px 0; text-align: center; font: 11px var(--mono); }
+      .spacer { height: 2px; }
+      @media (max-width: 840px) {
+        .shell { padding: 22px 20px 38px; }
+        .workspace-grid, .master-grid { grid-template-columns: 1fr; gap: 20px; }
+        .tool-panel { order: 0; }
+        .workspace-grid .list-area { order: 1; }
+      }
+      @media (max-width: 700px) {
+        .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .metric:nth-child(3) { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
+        .metric:nth-child(4) { border-top: 1px solid var(--line); }
+      }
+      @media (max-width: 560px) {
+        .shell { padding: 16px 14px calc(30px + env(safe-area-inset-bottom)); }
+        .topbar { padding-bottom: 18px; }
+        .topbar-tools { gap: 9px; }
+        .sheet-link { min-height: 32px; padding: 6px 8px; font-size: 9px; }
+        .account { font-size: 9px; }
+        .intro { padding: 26px 0 18px; }
+        h1 { font-size: 25px; }
+        .summary { margin-bottom: 20px; }
+        .metric { min-height: 80px; padding: 13px 9px 13px 0; }
+        .metric + .metric { padding-left: 10px; }
+        .metric-label { font-size: 9px; }
+        .metric-value { font-size: 14px; }
+        .tabs { margin-bottom: 17px; }
+        .tab { padding: 10px 11px; }
+        .tool-panel { padding: 16px 13px; }
+        .list-toolbar { align-items: stretch; flex-direction: column; }
+        .search { max-width: none; }
+        .debt-card { padding: 13px; }
+        .debt-meta { align-items: flex-start; flex-direction: column; }
+        .debt-actions { width: 100%; justify-content: space-between; }
+        .item-row-bottom { grid-template-columns: 64px repeat(2, minmax(0, 1fr)); }
+        .item-subtotal { grid-column: 1 / -1; }
+        .item-profit { text-align: right; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">O</div>
+          <div><div class="brand-name">ORBIT</div><div class="brand-note">PERSONAL DEBT LOG</div></div>
+        </div>
+        <div class="topbar-tools">
+          <a id="spreadsheet-link" class="sheet-link" href="#" target="_blank" rel="noopener noreferrer" aria-label="Buka spreadsheet">Buka sheet ↗</a>
+          <div class="account"><span class="account-dot"></span> RUANG PRIBADI</div>
+        </div>
+      </header>
+
+      <section class="intro">
+        <div>
+          <div class="eyebrow">CATATAN KEUANGAN / 01</div>
+          <h1>Catatan hutang</h1>
+          <p class="intro-copy">Semua catatan rapi, mudah dicari, dan tetap dalam kendalimu.</p>
+        </div>
+      </section>
+
+      <section class="summary" aria-label="Ringkasan hutang">
+        <div class="metric"><div class="metric-label">Total hutang</div><div id="summary-total" class="metric-value">Rp0</div></div>
+        <div class="metric"><div class="metric-label">Sudah dibayar</div><div id="summary-paid" class="metric-value">Rp0</div></div>
+        <div class="metric"><div class="metric-label">Sisa tagihan</div><div id="summary-remaining" class="metric-value mint">Rp0</div></div>
+        <div class="metric"><div class="metric-label">Laba kotor</div><div id="summary-profit" class="metric-value">Rp0</div></div>
+      </section>
+
+      <nav class="tabs" aria-label="Navigasi utama">
+        <button class="tab active" data-view="debts">Catatan hutang</button>
+        <button class="tab" data-view="purchases">Belanja barang</button>
+        <button class="tab" data-view="master">Data pilihan</button>
+      </nav>
+
+      <main>
+        <section id="debts-view">
+          <div class="workspace-grid">
+            <form id="debt-form" class="tool-panel">
+              <div class="section-head">
+                <h2 id="debt-form-title">Catat hutang baru</h2>
+                <span class="section-note">FORM / 01</span>
+              </div>
+              <div class="field">
+                <label for="debt-name">Nama</label>
+                <input id="debt-name" name="name" list="customer-options" placeholder="Cari atau ketik nama" autocomplete="off" required>
+                <datalist id="customer-options"></datalist>
+              </div>
+              <div class="two-fields">
+                <div class="field"><label for="debt-date">Tanggal</label><input id="debt-date" name="date" type="date" required></div>
+                <div class="field"><label for="debt-paid">Sudah dibayar</label><input id="debt-paid" name="paid" type="number" min="0" step="1" value="0" inputmode="numeric"></div>
+              </div>
+              <div class="line-head"><span class="field-label">Barang</span><button id="add-item" class="text-button" type="button">+ Tambah barang</button></div>
+              <datalist id="product-options"></datalist>
+              <div id="item-list" class="item-list"></div>
+              <div class="totals">
+                <div class="total-line"><span>Total hutang</span><strong id="form-total">Rp0</strong></div>
+                <div class="total-line due"><span>Sisa</span><strong id="form-remaining">Rp0</strong></div>
+              </div>
+              <div class="field" style="margin-top:15px;margin-bottom:0"><label for="debt-notes">Catatan</label><textarea id="debt-notes" name="notes" placeholder="Opsional"></textarea></div>
+              <div class="form-actions">
+                <button id="save-debt" class="primary-button" type="submit">Simpan catatan</button>
+                <button id="cancel-edit" class="secondary-button hidden" type="button">Batal</button>
+              </div>
+            </form>
+
+            <section class="list-area">
+              <div class="list-toolbar">
+                <h2>Riwayat <span id="debt-count" class="section-note"></span></h2>
+                <input id="debt-search" class="search" type="search" placeholder="Cari nama atau barang..." aria-label="Cari catatan hutang">
+              </div>
+              <div id="debt-list" class="debt-list"><div class="loading">MEMUAT CATATAN...</div></div>
+            </section>
+          </div>
+        </section>
+
+        <section id="master-view" class="hidden">
+          <div class="master-grid">
+            <form id="master-form" class="tool-panel">
+              <div class="section-head"><h2 id="master-form-title">Tambah data pilihan</h2><span class="section-note">DATA / 02</span></div>
+              <div class="master-switch" role="group" aria-label="Jenis data">
+                <button type="button" class="active" data-master-type="customer">Pelanggan</button>
+                <button type="button" data-master-type="product">Barang</button>
+              </div>
+              <div class="field"><label id="master-name-label" for="master-name">Nama pelanggan</label><input id="master-name" name="name" required></div>
+              <div id="master-price-field" class="two-fields hidden">
+                <div class="field"><label for="master-cost-price">Harga beli / modal</label><input id="master-cost-price" name="costPrice" type="number" min="0" step="1" inputmode="numeric"></div>
+                <div class="field"><label for="master-price">Harga jual</label><input id="master-price" name="price" type="number" min="0" step="1" inputmode="numeric"></div>
+              </div>
+              <div id="master-contact-field" class="field"><label for="master-contact">Kontak</label><input id="master-contact" name="contact" placeholder="Nomor telepon (opsional)"></div>
+              <div id="master-notes-field" class="field"><label for="master-notes">Catatan</label><textarea id="master-notes" name="notes" placeholder="Opsional"></textarea></div>
+              <div class="form-actions"><button id="save-master" class="primary-button" type="submit">Tambah ke daftar</button><button id="cancel-master-edit" class="secondary-button hidden" type="button">Batal</button></div>
+            </form>
+            <section class="list-area">
+              <div class="master-switch" role="group" aria-label="Daftar data">
+                <button type="button" class="active" data-master-list="customer">Pelanggan</button>
+                <button type="button" data-master-list="product">Barang</button>
+              </div>
+              <input id="master-search" class="search" type="search" placeholder="Cari nama..." aria-label="Cari data pilihan">
+              <div class="spacer"></div>
+              <div id="master-list" class="master-list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section id="purchases-view" class="hidden">
+          <div class="workspace-grid">
+            <form id="purchase-form" class="tool-panel">
+              <div class="section-head"><h2 id="purchase-form-title">Catat belanja barang</h2><span class="section-note">BELANJA / 03</span></div>
+              <div class="field"><label for="purchase-name">Barang</label><input id="purchase-name" list="product-options" placeholder="Cari atau ketik barang" autocomplete="off" required></div>
+              <div class="field"><label for="purchase-date">Tanggal belanja</label><input id="purchase-date" type="date" required></div>
+              <div class="two-fields">
+                <div class="field"><label for="purchase-quantity">Jumlah</label><input id="purchase-quantity" type="number" min="0.01" step="any" value="1" inputmode="decimal" required></div>
+                <div class="field"><label for="purchase-cost-price">Harga beli satuan</label><input id="purchase-cost-price" type="number" min="0" step="1" inputmode="numeric" placeholder="Rp" required></div>
+              </div>
+              <div class="totals"><div class="total-line due"><span>Total belanja</span><strong id="purchase-total">Rp0</strong></div></div>
+              <div class="field" style="margin-top:15px"><label for="purchase-supplier">Pemasok</label><input id="purchase-supplier" placeholder="Opsional"></div>
+              <div class="field"><label for="purchase-notes">Catatan</label><textarea id="purchase-notes" placeholder="Opsional"></textarea></div>
+              <div class="form-actions"><button id="save-purchase" class="primary-button" type="submit">Simpan belanja</button><button id="cancel-purchase-edit" class="secondary-button hidden" type="button">Batal</button></div>
+            </form>
+            <section class="list-area">
+              <div class="list-toolbar"><h2>Riwayat belanja <span id="purchase-count" class="section-note"></span></h2><input id="purchase-search" class="search" type="search" placeholder="Cari barang atau pemasok..." aria-label="Cari catatan belanja"></div>
+              <div id="purchase-list" class="debt-list"><div class="loading">MEMUAT CATATAN...</div></div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+    <script>
+      const state = { debts: [], purchases: [], customers: [], products: [], view: 'debts', masterType: 'customer', masterList: 'customer', editingDebt: null, editingMaster: null, editingPurchase: null };
+      const money = (value) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(value) || 0);
+      const escapeHtml = (value) => String(value == null ? '' : value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+      const rpc = (method, ...args) => new Promise((resolve, reject) => {
+        const runner = google.script.run.withSuccessHandler(resolve).withFailureHandler((error) => reject(new Error(error.message || 'Terjadi kesalahan.')));
+        runner[method](...args);
+      });
+
+      function toast(message, isError) {
+        const element = document.getElementById('toast');
+        element.textContent = message;
+        element.classList.toggle('error', Boolean(isError));
+        element.classList.remove('hidden');
+        clearTimeout(toast.timer);
+        toast.timer = setTimeout(() => element.classList.add('hidden'), 3600);
+      }
+
+      async function loadApp() {
+        try {
+          const result = await rpc('getAppData');
+          Object.assign(state, result);
+          renderAll();
+        } catch (error) {
+          document.getElementById('debt-list').innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
+          toast(error.message, true);
+        }
+      }
+
+      function renderAll() {
+        document.getElementById('summary-total').textContent = money(state.summary.total);
+        document.getElementById('summary-paid').textContent = money(state.summary.paid);
+        document.getElementById('summary-remaining').textContent = money(state.summary.remaining);
+        document.getElementById('summary-profit').textContent = money(state.summary.profit);
+        const spreadsheetLink = document.getElementById('spreadsheet-link');
+        spreadsheetLink.href = state.spreadsheetUrl || '#';
+        spreadsheetLink.classList.toggle('hidden', !state.spreadsheetUrl);
+        document.getElementById('customer-options').innerHTML = state.customers.map((customer) => `<option value="${escapeHtml(customer.name)}"></option>`).join('');
+        document.getElementById('product-options').innerHTML = state.products.map((product) => `<option value="${escapeHtml(product.name)}" label="Jual ${escapeHtml(money(product.price))} · Modal ${escapeHtml(money(product.costPrice))}"></option>`).join('');
+        renderDebts();
+        renderPurchases();
+        renderMaster();
+        updateTotals();
+      }
+
+      function renderDebts() {
+        const query = document.getElementById('debt-search').value.trim().toLowerCase();
+        const groups = new Map();
+        state.debts.forEach((debt) => {
+          const key = debt.name.trim().replace(/\s+/g, ' ').toLocaleLowerCase();
+          if (!groups.has(key)) groups.set(key, { name: debt.name.trim(), debts: [] });
+          groups.get(key).debts.push(debt);
+        });
+        const filtered = Array.from(groups.values()).filter((group) =>
+          [group.name, ...group.debts.flatMap((debt) => [debt.notes, ...debt.items.map((item) => item.name)])]
+            .join(' ').toLowerCase().includes(query));
+        const transactionCount = filtered.reduce((sum, group) => sum + group.debts.length, 0);
+        document.getElementById('debt-count').textContent = `(${filtered.length} orang · ${transactionCount} catatan)`;
+        const container = document.getElementById('debt-list');
+        if (!filtered.length) {
+          container.innerHTML = `<div class="empty">${query ? 'Tidak ada catatan yang cocok.' : 'Belum ada catatan. Tambahkan hutang pertamamu.'}</div>`;
+          return;
+        }
+        container.innerHTML = filtered.map((group) => {
+          const total = group.debts.reduce((sum, debt) => sum + debt.total, 0);
+          const paid = group.debts.reduce((sum, debt) => sum + debt.paid, 0);
+          const remaining = group.debts.reduce((sum, debt) => sum + debt.remaining, 0);
+          const detailCards = group.debts.map((debt) => {
+            const statusClass = debt.status === 'LUNAS' ? 'paid' : (debt.status === 'DICICIL' ? 'partial' : '');
+            const itemNames = debt.items.map((item) => `${escapeHtml(item.name)} × ${escapeHtml(item.quantity)}`).join(', ');
+            const profit = debt.items.reduce((sum, item) => sum + item.subtotal - item.costSubtotal, 0);
+            return `<article class="transaction-card">
+              <div class="debt-main"><div><div class="debt-person">Transaksi · ${escapeHtml(debt.date)}</div><div class="debt-date">${itemNames || 'Tanpa detail barang'}${debt.notes ? ` · ${escapeHtml(debt.notes)}` : ''}</div></div>
+              <div class="debt-amount">${money(debt.total)}<div class="debt-remaining">Sisa ${money(debt.remaining)}</div><div class="debt-profit">Laba kotor ${money(profit)}</div></div></div>
+              <div class="debt-meta"><div class="item-summary">Sudah dibayar ${money(debt.paid)}</div><div class="debt-actions"><span class="status ${statusClass}">${escapeHtml(debt.status)}</span><button class="secondary-button" type="button" data-edit-debt="${escapeHtml(debt.id)}">Edit</button><button class="icon-button" type="button" aria-label="Hapus catatan" title="Hapus catatan" data-delete-debt="${escapeHtml(debt.id)}">×</button></div></div>
+            </article>`;
+          }).join('');
+          const settleAction = remaining > 0
+            ? `<div class="settle-row"><button class="secondary-button" type="button" data-settle-customer="${escapeHtml(group.name)}">Lunasi semua · ${money(remaining)}</button></div>`
+            : '';
+          return `<details class="customer-group">
+            <summary><div><div class="debt-person">${escapeHtml(group.name)}</div><div class="group-subtitle">${group.debts.length} transaksi</div></div><div class="group-amount">Total ${money(total)}<strong>Sisa ${money(remaining)}</strong></div></summary>
+            <div class="group-body"><div class="group-totals"><span>Sudah dibayar <strong>${money(paid)}</strong></span><span>Total tercatat <strong>${money(total)}</strong></span></div>${settleAction}<div class="transaction-list">${detailCards}</div></div>
+          </details>`;
+        }).join('');
+      }
+
+      function renderMaster() {
+        const type = state.masterList;
+        const query = document.getElementById('master-search').value.trim().toLowerCase();
+        const entries = (type === 'customer' ? state.customers : state.products).filter((entry) => `${entry.name} ${entry.contact || ''} ${entry.notes || ''}`.toLowerCase().includes(query));
+        document.getElementById('master-list').innerHTML = entries.length ? entries.map((entry) => {
+          const detail = type === 'product' ? `Beli ${money(entry.costPrice)} · Jual ${money(entry.price)}` : [entry.contact, entry.notes].filter(Boolean).join(' · ') || 'Belum ada detail';
+          return `<div class="master-row"><div><div class="master-name">${escapeHtml(entry.name)}</div><div class="master-detail">${escapeHtml(detail)}</div></div><button class="secondary-button" type="button" data-edit-master="${escapeHtml(entry.id)}">Ubah</button></div>`;
+        }).join('') : `<div class="empty">${query ? 'Tidak ada data yang cocok.' : 'Belum ada data di daftar ini.'}</div>`;
+      }
+
+      function renderPurchases() {
+        const query = document.getElementById('purchase-search').value.trim().toLowerCase();
+        const filtered = state.purchases.filter((purchase) => [purchase.name, purchase.supplier, purchase.notes].join(' ').toLowerCase().includes(query));
+        document.getElementById('purchase-count').textContent = `(${filtered.length})`;
+        const container = document.getElementById('purchase-list');
+        if (!filtered.length) {
+          container.innerHTML = `<div class="empty">${query ? 'Tidak ada catatan yang cocok.' : 'Belum ada catatan belanja.'}</div>`;
+          return;
+        }
+        container.innerHTML = filtered.map((purchase) => `<article class="debt-card">
+          <div class="debt-main"><div><div class="debt-person">${escapeHtml(purchase.name)} × ${escapeHtml(purchase.quantity)}</div><div class="debt-date">${escapeHtml(purchase.date)}${purchase.supplier ? ` · ${escapeHtml(purchase.supplier)}` : ''}${purchase.notes ? ` · ${escapeHtml(purchase.notes)}` : ''}</div></div>
+          <div class="purchase-amount">${money(purchase.total)}<div class="debt-date">${money(purchase.costPrice)} / unit</div></div></div>
+          <div class="debt-meta"><div class="item-summary">Belanja barang · ${escapeHtml(purchase.id.slice(0, 8))}</div><div class="debt-actions"><button class="secondary-button" type="button" data-edit-purchase="${escapeHtml(purchase.id)}">Edit</button><button class="icon-button" type="button" aria-label="Hapus belanja" title="Hapus belanja" data-delete-purchase="${escapeHtml(purchase.id)}">×</button></div></div>
+        </article>`).join('');
+      }
+
+      function addItemRow(item) {
+        const row = document.createElement('div');
+        row.className = 'item-row';
+        row.innerHTML = `<div class="item-row-top"><input data-item-name list="product-options" placeholder="Cari atau ketik barang" autocomplete="off" aria-label="Nama barang" required><button class="icon-button" type="button" data-remove-item aria-label="Hapus barang" title="Hapus barang">×</button></div>
+          <div class="item-row-bottom"><div class="field"><label>Jumlah</label><input data-item-quantity type="number" min="0.01" step="any" value="1" inputmode="decimal" required></div><div class="field"><label>Harga jual</label><input data-item-price type="number" min="0" step="1" inputmode="numeric" placeholder="Rp" required></div><div class="field"><label>Harga beli</label><input data-item-cost-price type="number" min="0" step="1" inputmode="numeric" placeholder="Rp" required></div></div><div class="item-subtotal"><span data-item-sale-total>Jual Rp0</span><span class="item-profit" data-item-profit>Laba Rp0</span></div>`;
+        if (item) {
+          row.querySelector('[data-item-name]').value = item.name || '';
+          row.querySelector('[data-item-quantity]').value = item.quantity || 1;
+          row.querySelector('[data-item-price]').value = item.price || 0;
+          row.querySelector('[data-item-cost-price]').value = item.costPrice || 0;
+        }
+        document.getElementById('item-list').appendChild(row);
+        updateTotals();
+      }
+
+      function updateTotals() {
+        let total = 0;
+        document.querySelectorAll('.item-row').forEach((row) => {
+          const quantity = Number(row.querySelector('[data-item-quantity]').value) || 0;
+          const price = Number(row.querySelector('[data-item-price]').value) || 0;
+          const costPrice = Number(row.querySelector('[data-item-cost-price]').value) || 0;
+          const subtotal = quantity * price;
+          total += subtotal;
+          row.querySelector('[data-item-sale-total]').textContent = `Jual ${money(subtotal)}`;
+          row.querySelector('[data-item-profit]').textContent = `Laba ${money(quantity * (price - costPrice))}`;
+        });
+        const paid = Number(document.getElementById('debt-paid').value) || 0;
+        document.getElementById('form-total').textContent = money(total);
+        document.getElementById('form-remaining').textContent = money(Math.max(0, total - paid));
+      }
+
+      function resetDebtForm() {
+        document.getElementById('debt-form').reset();
+        document.getElementById('debt-date').value = new Date().toLocaleDateString('en-CA');
+        document.getElementById('item-list').innerHTML = '';
+        addItemRow();
+        state.editingDebt = null;
+        document.getElementById('debt-form-title').textContent = 'Catat hutang baru';
+        document.getElementById('save-debt').textContent = 'Simpan catatan';
+        document.getElementById('cancel-edit').classList.add('hidden');
+      }
+
+      function editDebt(id) {
+        const debt = state.debts.find((entry) => entry.id === id);
+        if (!debt) return;
+        state.editingDebt = id;
+        document.getElementById('debt-name').value = debt.name;
+        document.getElementById('debt-date').value = debt.date;
+        document.getElementById('debt-paid').value = debt.paid;
+        document.getElementById('debt-notes').value = debt.notes;
+        document.getElementById('item-list').innerHTML = '';
+        debt.items.forEach(addItemRow);
+        if (!debt.items.length) addItemRow();
+        document.getElementById('debt-form-title').textContent = 'Ubah catatan hutang';
+        document.getElementById('save-debt').textContent = 'Simpan perubahan';
+        document.getElementById('cancel-edit').classList.remove('hidden');
+        document.getElementById('debt-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function setMasterType(type) {
+        state.masterType = type;
+        document.querySelectorAll('[data-master-type]').forEach((button) => button.classList.toggle('active', button.dataset.masterType === type));
+        document.getElementById('master-name-label').textContent = type === 'product' ? 'Nama barang' : 'Nama pelanggan';
+        document.getElementById('master-price-field').classList.toggle('hidden', type !== 'product');
+        document.getElementById('master-price').required = type === 'product';
+        document.getElementById('master-cost-price').required = type === 'product';
+        document.getElementById('master-contact-field').classList.toggle('hidden', type !== 'customer');
+        document.getElementById('master-notes-field').classList.toggle('hidden', type !== 'customer');
+        resetMasterForm();
+      }
+
+      function setMasterList(type) {
+        state.masterList = type;
+        document.querySelectorAll('[data-master-list]').forEach((button) => button.classList.toggle('active', button.dataset.masterList === type));
+        renderMaster();
+      }
+
+      function editMaster(id) {
+        const entries = state.masterType === 'customer' ? state.customers : state.products;
+        const entry = entries.find((current) => current.id === id);
+        if (!entry) {
+          setMasterType(state.masterList);
+          return editMaster(id);
+        }
+        state.editingMaster = id;
+        document.getElementById('master-name').value = entry.name;
+        if (state.masterType === 'product') {
+          document.getElementById('master-cost-price').value = entry.costPrice;
+          document.getElementById('master-price').value = entry.price;
+        }
+        else {
+          document.getElementById('master-contact').value = entry.contact || '';
+          document.getElementById('master-notes').value = entry.notes || '';
+        }
+        document.getElementById('master-form-title').textContent = 'Ubah data pilihan';
+        document.getElementById('save-master').textContent = 'Simpan perubahan';
+        document.getElementById('cancel-master-edit').classList.remove('hidden');
+        document.getElementById('master-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function resetMasterForm() {
+        document.getElementById('master-form').reset();
+        state.editingMaster = null;
+        document.getElementById('master-form-title').textContent = 'Tambah data pilihan';
+        document.getElementById('save-master').textContent = 'Tambah ke daftar';
+        document.getElementById('cancel-master-edit').classList.add('hidden');
+      }
+
+      function updatePurchaseTotal() {
+        const quantity = Number(document.getElementById('purchase-quantity').value) || 0;
+        const costPrice = Number(document.getElementById('purchase-cost-price').value) || 0;
+        document.getElementById('purchase-total').textContent = money(quantity * costPrice);
+      }
+
+      function resetPurchaseForm() {
+        document.getElementById('purchase-form').reset();
+        document.getElementById('purchase-date').value = new Date().toLocaleDateString('en-CA');
+        document.getElementById('purchase-quantity').value = 1;
+        state.editingPurchase = null;
+        document.getElementById('purchase-form-title').textContent = 'Catat belanja barang';
+        document.getElementById('save-purchase').textContent = 'Simpan belanja';
+        document.getElementById('cancel-purchase-edit').classList.add('hidden');
+        updatePurchaseTotal();
+      }
+
+      function editPurchase(id) {
+        const purchase = state.purchases.find((entry) => entry.id === id);
+        if (!purchase) return;
+        state.editingPurchase = id;
+        document.getElementById('purchase-name').value = purchase.name;
+        document.getElementById('purchase-date').value = purchase.date;
+        document.getElementById('purchase-quantity').value = purchase.quantity;
+        document.getElementById('purchase-cost-price').value = purchase.costPrice;
+        document.getElementById('purchase-supplier').value = purchase.supplier;
+        document.getElementById('purchase-notes').value = purchase.notes;
+        document.getElementById('purchase-form-title').textContent = 'Ubah catatan belanja';
+        document.getElementById('save-purchase').textContent = 'Simpan perubahan';
+        document.getElementById('cancel-purchase-edit').classList.remove('hidden');
+        updatePurchaseTotal();
+        document.getElementById('purchase-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      document.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => {
+        state.view = button.dataset.view;
+        document.querySelectorAll('[data-view]').forEach((tab) => tab.classList.toggle('active', tab === button));
+        document.getElementById('debts-view').classList.toggle('hidden', state.view !== 'debts');
+        document.getElementById('master-view').classList.toggle('hidden', state.view !== 'master');
+        document.getElementById('purchases-view').classList.toggle('hidden', state.view !== 'purchases');
+      }));
+      document.getElementById('add-item').addEventListener('click', () => addItemRow());
+      document.getElementById('debt-search').addEventListener('input', renderDebts);
+      document.getElementById('master-search').addEventListener('input', renderMaster);
+      document.getElementById('purchase-search').addEventListener('input', renderPurchases);
+      document.getElementById('purchase-quantity').addEventListener('input', updatePurchaseTotal);
+      document.getElementById('purchase-cost-price').addEventListener('input', updatePurchaseTotal);
+      document.getElementById('purchase-name').addEventListener('change', (event) => {
+        const match = state.products.find((product) => product.name.toLowerCase() === event.target.value.trim().toLowerCase());
+        if (match) document.getElementById('purchase-cost-price').value = match.costPrice;
+        updatePurchaseTotal();
+      });
+      document.getElementById('debt-paid').addEventListener('input', updateTotals);
+      document.getElementById('item-list').addEventListener('input', updateTotals);
+      document.getElementById('item-list').addEventListener('change', (event) => {
+        if (!event.target.matches('[data-item-name]')) return;
+        const match = state.products.find((product) => product.name.toLowerCase() === event.target.value.trim().toLowerCase());
+        if (match) {
+          const row = event.target.closest('.item-row');
+          row.querySelector('[data-item-price]').value = match.price;
+          row.querySelector('[data-item-cost-price]').value = match.costPrice;
+        }
+        updateTotals();
+      });
+      document.getElementById('item-list').addEventListener('click', (event) => {
+        if (!event.target.closest('[data-remove-item]')) return;
+        const rows = document.querySelectorAll('.item-row');
+        if (rows.length === 1) {
+          rows[0].querySelector('[data-item-name]').value = '';
+          rows[0].querySelector('[data-item-quantity]').value = 1;
+          rows[0].querySelector('[data-item-price]').value = '';
+          rows[0].querySelector('[data-item-cost-price]').value = '';
+        } else event.target.closest('.item-row').remove();
+        updateTotals();
+      });
+      document.getElementById('debt-list').addEventListener('click', async (event) => {
+        const settleButton = event.target.closest('[data-settle-customer]');
+        if (settleButton) {
+          const customerName = settleButton.dataset.settleCustomer;
+          const key = customerName.trim().replace(/\s+/g, ' ').toLocaleLowerCase();
+          const due = state.debts.filter((debt) => debt.name.trim().replace(/\s+/g, ' ').toLocaleLowerCase() === key)
+            .reduce((sum, debt) => sum + debt.remaining, 0);
+          if (!due || !confirm(`Catat pelunasan ${money(due)} untuk semua hutang ${customerName}?`)) return;
+          try {
+            const result = await rpc('settleCustomerDebts', customerName);
+            await loadApp();
+            toast(result.message);
+          } catch (error) { toast(error.message, true); }
+          return;
+        }
+        const editButton = event.target.closest('[data-edit-debt]');
+        if (editButton) return editDebt(editButton.dataset.editDebt);
+        const deleteButton = event.target.closest('[data-delete-debt]');
+        if (!deleteButton || !confirm('Hapus catatan hutang ini?')) return;
+        try {
+          await rpc('deleteTransaction', deleteButton.dataset.deleteDebt);
+          await loadApp();
+          toast('Catatan hutang dihapus.');
+        } catch (error) { toast(error.message, true); }
+      });
+      document.getElementById('purchase-list').addEventListener('click', async (event) => {
+        const editButton = event.target.closest('[data-edit-purchase]');
+        if (editButton) return editPurchase(editButton.dataset.editPurchase);
+        const deleteButton = event.target.closest('[data-delete-purchase]');
+        if (!deleteButton || !confirm('Hapus catatan belanja ini?')) return;
+        try {
+          await rpc('deletePurchase', deleteButton.dataset.deletePurchase);
+          await loadApp();
+          toast('Catatan belanja dihapus.');
+        } catch (error) { toast(error.message, true); }
+      });
+      document.getElementById('debt-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const items = Array.from(document.querySelectorAll('.item-row')).map((row) => ({
+          name: row.querySelector('[data-item-name]').value,
+          quantity: row.querySelector('[data-item-quantity]').value,
+          price: row.querySelector('[data-item-price]').value,
+          costPrice: row.querySelector('[data-item-cost-price]').value,
+        }));
+        const payload = {
+          id: state.editingDebt,
+          name: document.getElementById('debt-name').value,
+          date: document.getElementById('debt-date').value,
+          paid: document.getElementById('debt-paid').value,
+          notes: document.getElementById('debt-notes').value,
+          items,
+        };
+        const button = document.getElementById('save-debt');
+        button.disabled = true;
+        try {
+          const result = await rpc('saveTransaction', payload);
+          resetDebtForm();
+          await loadApp();
+          toast(result.message);
+        } catch (error) { toast(error.message, true); }
+        finally { button.disabled = false; }
+      });
+      document.querySelectorAll('[data-master-type]').forEach((button) => button.addEventListener('click', () => setMasterType(button.dataset.masterType)));
+      document.querySelectorAll('[data-master-list]').forEach((button) => button.addEventListener('click', () => setMasterList(button.dataset.masterList)));
+      document.getElementById('master-list').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-edit-master]');
+        if (!button) return;
+        if (state.masterType !== state.masterList) setMasterType(state.masterList);
+        editMaster(button.dataset.editMaster);
+      });
+      document.getElementById('cancel-edit').addEventListener('click', resetDebtForm);
+      document.getElementById('cancel-master-edit').addEventListener('click', resetMasterForm);
+      document.getElementById('cancel-purchase-edit').addEventListener('click', resetPurchaseForm);
+      document.getElementById('master-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          id: state.editingMaster,
+          name: document.getElementById('master-name').value,
+          price: document.getElementById('master-price').value,
+          costPrice: document.getElementById('master-cost-price').value,
+          contact: document.getElementById('master-contact').value,
+          notes: document.getElementById('master-notes').value,
+        };
+        const button = document.getElementById('save-master');
+        button.disabled = true;
+        try {
+          const result = await rpc('saveMaster', state.masterType, payload);
+          resetMasterForm();
+          await loadApp();
+          toast(result.message);
+        } catch (error) { toast(error.message, true); }
+        finally { button.disabled = false; }
+      });
+      document.getElementById('purchase-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          id: state.editingPurchase,
+          name: document.getElementById('purchase-name').value,
+          date: document.getElementById('purchase-date').value,
+          quantity: document.getElementById('purchase-quantity').value,
+          costPrice: document.getElementById('purchase-cost-price').value,
+          supplier: document.getElementById('purchase-supplier').value,
+          notes: document.getElementById('purchase-notes').value,
+        };
+        const button = document.getElementById('save-purchase');
+        button.disabled = true;
+        try {
+          const result = await rpc('savePurchase', payload);
+          resetPurchaseForm();
+          await loadApp();
+          toast(result.message);
+        } catch (error) { toast(error.message, true); }
+        finally { button.disabled = false; }
+      });
+
+      resetDebtForm();
+      resetPurchaseForm();
+      loadApp();
+    </script>
+  </body>
+</html>
